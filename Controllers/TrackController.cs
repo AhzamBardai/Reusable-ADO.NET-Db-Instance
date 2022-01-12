@@ -14,27 +14,29 @@ namespace SqliteFromScratch.Controllers {
 
         public TrackController() {
             Tracks = new List<Track>();
-            Action<SqliteDataReader> action = reader => MakeTrack(reader);
-            DbInstance db = new DbInstance(sql, action);
+            //Action<SqliteDataReader> action = reader => MakeTrack(reader);
         }
 
-        public void MakeTrack( SqliteDataReader reader ) {
-            Track track = new Track() {
-                Id = reader.GetInt32(0),
-                Name = reader.GetString(1),
-                AlbumId = reader.GetInt32(2),
-                MediaTypeId = reader.GetInt32(3),
-                GenreId = reader.GetInt32(4),
-                Composer = reader.GetValue(5).ToString(),
-                Milliseconds = reader.GetInt32(6),
-                Bytes = reader.GetInt32(7),
-                UnitPrice = reader.GetInt32(8)
-            };
-            Tracks.Add(track);
+        public void MakeTrack() {
+            DbInstance db = new(sql, reader => {
+                Track track = new Track() {
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1),
+                    AlbumId = reader.GetInt32(2),
+                    MediaTypeId = reader.GetInt32(3),
+                    GenreId = reader.GetInt32(4),
+                    Composer = reader.GetValue(5).ToString(),
+                    Milliseconds = reader.GetInt32(6),
+                    Bytes = reader.GetInt32(7),
+                    UnitPrice = reader.GetInt32(8)
+                };
+                Tracks.Add(track);
+            });
         }
 
         [HttpGet]
         public List<Track> Index() {
+            MakeTrack();
             return Tracks;
         }
     }
